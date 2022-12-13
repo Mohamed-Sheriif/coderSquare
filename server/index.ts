@@ -1,7 +1,6 @@
-import express, { RequestHandler } from "express";
-import { db } from "./datastore/index";
+import express, { ErrorRequestHandler, RequestHandler } from "express";
 import { createPostHandler, listPostHandler } from "./handlers/postHandler";
-
+import asyncHandler from "express-async-handler";
 const app = express();
 
 const requestLoggerMiddleware: RequestHandler = (req, res, next) => {
@@ -12,12 +11,16 @@ const requestLoggerMiddleware: RequestHandler = (req, res, next) => {
   }
   next();
 };
-
-const posts: any[] = [];
+const errHandler: ErrorRequestHandler = (err, req, res, next) => {
+  return res
+    .sendStatus(500)
+    .send(`Oops , an unexpected error occured, plese try again!`);
+};
 
 // Middleware
 app.use(express.json());
 app.use(requestLoggerMiddleware);
+app.use(errHandler);
 
 // Routes
 app.get("/posts", listPostHandler);
