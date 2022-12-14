@@ -1,26 +1,13 @@
 import express, { ErrorRequestHandler, RequestHandler } from "express";
 import { createPostHandler, listPostHandler } from "./handlers/postHandler";
-import asyncHandler from "express-async-handler";
 import { initDb } from "./datastore";
-import { signInHandler, signUpHandler } from "./handlers/userHandler";
+import { signInHandler, signUpHandler } from "./handlers/authHandler";
+import { requestLoggerMiddleware } from "./middleware/loggerMiddleware";
+import { errHandler } from "./middleware/errorMiddleware";
 
 (async () => {
   await initDb();
   const app = express();
-
-  const requestLoggerMiddleware: RequestHandler = (req, res, next) => {
-    if (req.method === "POST") {
-      console.log(req.method, req.path, "- body", req.body);
-    } else {
-      console.log(req.method, req.path);
-    }
-    next();
-  };
-  const errHandler: ErrorRequestHandler = (err, req, res, next) => {
-    return res
-      .sendStatus(500)
-      .send(`Oops , an unexpected error occured, plese try again!`);
-  };
 
   // Middleware
   app.use(express.json());
