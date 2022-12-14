@@ -2,6 +2,7 @@ import express, { ErrorRequestHandler, RequestHandler } from "express";
 import { createPostHandler, listPostHandler } from "./handlers/postHandler";
 import asyncHandler from "express-async-handler";
 import { initDb } from "./datastore";
+import { signInHandler, signUpHandler } from "./handlers/userHandler";
 
 (async () => {
   await initDb();
@@ -29,6 +30,8 @@ import { initDb } from "./datastore";
   // Routes
   app.get("/posts", listPostHandler);
   app.post("/posts", createPostHandler);
+  app.post("/signup", signUpHandler);
+  app.post("/signin", signInHandler);
 
   const PORT = 3000;
   app.listen(PORT, () => {
