@@ -4,9 +4,14 @@ import { initDb } from "./datastore";
 import { signInHandler, signUpHandler } from "./handlers/authHandler";
 import { requestLoggerMiddleware } from "./middleware/loggerMiddleware";
 import { errHandler } from "./middleware/errorMiddleware";
+import dotenv from "dotenv";
+import { authMiddleware } from "./middleware/authMiddleware";
 
 (async () => {
   await initDb();
+
+  dotenv.config();
+
   const app = express();
 
   // Middleware
@@ -15,10 +20,16 @@ import { errHandler } from "./middleware/errorMiddleware";
   app.use(errHandler);
 
   // Routes
-  app.get("/posts", listPostHandler);
-  app.post("/posts", createPostHandler);
+
+  // public endpoints
   app.post("/signup", signUpHandler);
   app.post("/signin", signInHandler);
+
+  app.use(authMiddleware);
+
+  // protected endpoints
+  app.get("/posts", listPostHandler);
+  app.post("/posts", createPostHandler);
 
   const PORT = 3000;
   app.listen(PORT, () => {
